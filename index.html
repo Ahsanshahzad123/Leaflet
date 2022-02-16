@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/JHS_1.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:25, minZoom:10
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'feet',
+            secondaryLengthUnit: 'miles',
+            primaryAreaUnit: 'sqfeet',
+            secondaryAreaUnit: 'sqmiles'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+        map.createPane('pane_GoogleSatellite_0');
+        map.getPane('pane_GoogleSatellite_0').style.zIndex = 400;
+        var layer_GoogleSatellite_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatellite_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            minZoom: 10,
+            maxZoom: 25,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleSatellite_0;
+        map.addLayer(layer_GoogleSatellite_0);
+        function pop_JHS_1(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">fid</th>\
+                        <td>' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Land use</th>\
+                        <td>' + (feature.properties['Land_Use'] !== null ? autolinker.link(feature.properties['Land_Use'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Road</th>\
+                        <td>' + (feature.properties['Road'] !== null ? autolinker.link(feature.properties['Road'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area in</th>\
+                        <td>' + (feature.properties['Area_In'] !== null ? autolinker.link(feature.properties['Area_In'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Legal_Status</th>\
+                        <td>' + (feature.properties['Legal_Status'] !== null ? autolinker.link(feature.properties['Legal_Status'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Size of Plot</th>\
+                        <td>' + (feature.properties['Size_LxW_Feet'] !== null ? autolinker.link(feature.properties['Size_LxW_Feet'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Street</th>\
+                        <td>' + (feature.properties['Street'] !== null ? autolinker.link(feature.properties['Street'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Total Area</th>\
+                        <td>' + (feature.properties['Total_Area'] !== null ? autolinker.link(feature.properties['Total_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Plot No</th>\
+                        <td>' + (feature.properties['plot'] !== null ? autolinker.link(feature.properties['plot'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Owner Name</th>\
+                        <td>' + (feature.properties['OWNER_NAME'] !== null ? autolinker.link(feature.properties['OWNER_NAME'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Category</th>\
+                        <td>' + (feature.properties['Category'] !== null ? autolinker.link(feature.properties['Category'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CNIC</th>\
+                        <td>' + (feature.properties['NIC'] !== null ? autolinker.link(feature.properties['NIC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Quota</th>\
+                        <td>' + (feature.properties['QUOTA'] !== null ? autolinker.link(feature.properties['QUOTA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_JHS_1_0(feature) {
+            switch(String(feature.properties['Land_Use'])) {
+                case 'Residential':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(250,250,250,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(232,161,46,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Commercial':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(255,255,255,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(1,146,224,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Educational':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(225,66,30,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Public Building':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(152,239,142,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Health':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(122,216,14,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Open Space':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(207,212,48,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Religious':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(206,111,135,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Existing Grave Yard':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(205,23,225,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Future Extension':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(123,118,217,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Parking':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(140,72,218,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'Recreational':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(90,206,177,0.64)',
+                interactive: true,
+            }
+                    break;
+                case 'NULL':
+                    return {
+                pane: 'pane_JHS_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.64)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(152,125,183,0.64)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_JHS_1');
+        map.getPane('pane_JHS_1').style.zIndex = 401;
+        map.getPane('pane_JHS_1').style['mix-blend-mode'] = 'normal';
+        var layer_JHS_1 = new L.geoJson(json_JHS_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_JHS_1',
+            layerName: 'layer_JHS_1',
+            pane: 'pane_JHS_1',
+            onEachFeature: pop_JHS_1,
+            style: style_JHS_1_0,
+        });
+        bounds_group.addLayer(layer_JHS_1);
+        map.addLayer(layer_JHS_1);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'JHS<br /><table><tr><td style="text-align: center;"><img src="legend/JHS_1_Residential0.png" /></td><td>Residential</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_Commercial1.png" /></td><td>Commercial</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_Educational2.png" /></td><td>Educational</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_PublicBuilding3.png" /></td><td>Public Building</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_Health4.png" /></td><td>Health</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_OpenSpace5.png" /></td><td>Open Space</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_Religious6.png" /></td><td>Religious</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_ExistingGraveYard7.png" /></td><td>Existing Grave Yard</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_FutureExtension8.png" /></td><td>Future Extension</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_Parking9.png" /></td><td>Parking</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_Recreational10.png" /></td><td>Recreational</td></tr><tr><td style="text-align: center;"><img src="legend/JHS_1_11.png" /></td><td></td></tr></table>': layer_JHS_1,"Google Satellite": layer_GoogleSatellite_0,},{collapsed:false}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_JHS_1,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'NIC'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"QUOTA": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_QUOTA = document.createElement('div');
+            div_QUOTA.id = "div_QUOTA";
+            div_QUOTA.className= "filterselect";
+            document.getElementById("menu").appendChild(div_QUOTA);
+            sel_QUOTA = document.createElement('select');
+            sel_QUOTA.multiple = true;
+            sel_QUOTA.size = 10;
+            sel_QUOTA.id = "sel_QUOTA";
+            var QUOTA_options_str = "<option value='' unselected></option>";
+            sel_QUOTA.onchange = function(){filterFunc()};
+            QUOTA_options_str  += '<option value="NULL">NULL</option>';
+            QUOTA_options_str  += '<option value="AUTONMOUS ">AUTONMOUS </option>';
+            QUOTA_options_str  += '<option value="GENEAL PUBLIC">GENEAL PUBLIC</option>';
+            QUOTA_options_str  += '<option value="GENERAL PUBLIC">GENERAL PUBLIC</option>';
+            QUOTA_options_str  += '<option value="GOVT EMPLOYEES">GOVT EMPLOYEES</option>';
+            QUOTA_options_str  += '<option value="MEDIA">MEDIA</option>';
+            QUOTA_options_str  += '<option value="MINORITY">MINORITY</option>';
+            QUOTA_options_str  += '<option value="OVERSEAS">OVERSEAS</option>';
+            QUOTA_options_str  += '<option value="RETIRED GOV EM">RETIRED GOV EM</option>';
+            QUOTA_options_str  += '<option value="SPECIAL PERSON">SPECIAL PERSON</option>';
+            sel_QUOTA.innerHTML = QUOTA_options_str;
+            div_QUOTA.appendChild(sel_QUOTA);
+            var lab_QUOTA = document.createElement('div');
+            lab_QUOTA.innerHTML = 'QUOTA';
+            lab_QUOTA.className = 'filterlabel';
+            div_QUOTA.appendChild(lab_QUOTA);
+            var reset_QUOTA = document.createElement('div');
+            reset_QUOTA.innerHTML = 'clear filter';
+            reset_QUOTA.className = 'filterlabel';
+            reset_QUOTA.onclick = function() {
+                var options = document.getElementById("sel_QUOTA").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_QUOTA.appendChild(reset_QUOTA);
+        </script>
+    </body>
+</html>
